@@ -2,13 +2,22 @@ const express = require("express");
 const Question = require("../models/Question");
 const router = express.Router();
 
+// ✅ Add a new question with category
 router.post("/:matchId", async (req, res) => {
   try {
-    const { text, options } = req.body;
-    if (!text || !Array.isArray(options) || options.length !== 2) {
-      return res.status(400).json({ error: "Invalid question format" });
+    const { text, options, category } = req.body;
+
+    if (!text || !Array.isArray(options) || options.length !== 2 || !category) {
+      return res.status(400).json({ error: "Invalid question format or missing category" });
     }
-    const newQuestion = new Question({ matchId: req.params.matchId, text, options });
+
+    const newQuestion = new Question({ 
+      matchId: req.params.matchId, 
+      text, 
+      options, 
+      category // ✅ Store category
+    });
+
     await newQuestion.save();
     res.json({ message: "Question added successfully", question: newQuestion });
   } catch (err) {
@@ -16,6 +25,7 @@ router.post("/:matchId", async (req, res) => {
   }
 });
 
+// ✅ Fetch questions for a match
 router.get("/:matchId", async (req, res) => {
   try {
     const questions = await Question.find({ matchId: req.params.matchId });
@@ -25,11 +35,21 @@ router.get("/:matchId", async (req, res) => {
   }
 });
 
+// ✅ Fetch questions by category
+router.get("/category/:category", async (req, res) => {
+  try {
+    const questions = await Question.find({ category: req.params.category });
+    res.json(questions);
+  } catch (err) {
+    res.status(500).json({ error: "Error fetching questions by category" });
+  }
+});
 
+// ✅ Update correct answer
 router.put("/update-answer/:questionId", async (req, res) => {
   try {
     const { correctAnswer } = req.body;
-    
+
     if (!correctAnswer) {
       return res.status(400).json({ error: "Correct answer is required" });
     }
@@ -37,7 +57,7 @@ router.put("/update-answer/:questionId", async (req, res) => {
     const updatedQuestion = await Question.findByIdAndUpdate(
       req.params.questionId,
       { correctAnswer },
-      { new: true } // Return the updated document
+      { new: true }
     );
 
     if (!updatedQuestion) {
@@ -50,6 +70,5 @@ router.put("/update-answer/:questionId", async (req, res) => {
     res.status(500).json({ error: "Error updating correct answer" });
   }
 });
-
 
 module.exports = router;

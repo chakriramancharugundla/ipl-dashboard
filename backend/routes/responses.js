@@ -55,19 +55,28 @@ router.put("/update-correctness/:matchId", async (req, res) => {
 
     // Fetch all questions for the match
     const questions = await Question.find({ matchId });
-
+    
     // Update each response based on the correct answer
     for (let question of questions) {
       if (question.correctAnswer) {
         await Response.updateMany(
           { questionId: question._id, matchId },
-          { $set: { isCorrect: { $eq: ["$selectedOption", question.correctAnswer] } } }
+          [
+            {
+              $set: {
+                isCorrect: {
+                  $eq: ["$selectedOption", question.correctAnswer]
+                }
+              }
+            }
+          ]
         );
       }
     }
 
     res.json({ message: "Responses updated based on correct answers" });
   } catch (err) {
+    console.error(err); // Log error for debugging
     res.status(500).json({ error: "Error updating response correctness" });
   }
 });
