@@ -1,0 +1,64 @@
+.dashboard-container {
+    max-width: 100%;
+    margin: auto;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .dashboard-title {
+    font-size: 22px;
+    margin-bottom: 15px;
+  }
+  
+  /* Make middle columns scrollable */
+  .table-container {
+    overflow-x: auto;
+    max-height: 500px;
+    border: 1px solid #ddd;
+    position: relative;
+  }
+  
+  /* Table Styling */
+  .dashboard-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  /* Table Header & Cell Styling */
+  .dashboard-table th,
+  .dashboard-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: center;
+    white-space: nowrap;
+    min-width: 120px; /* Ensure columns are scrollable */
+  }
+  
+  /* Sticky (Fixed) Columns */
+  .fixed-column {
+    position: sticky;
+    left: 0;
+    background: #fff;
+    z-index: 2;
+    font-weight: bold;
+  }
+  
+  /* Scrollable Middle Columns */
+  .scrollable-column {
+    min-width: 140px;
+  }
+  
+  /* Style the header */
+  .dashboard-table th {
+    background: #333;
+    color: #fff;
+  }
+  
+  /* Loading Text */
+  .loading {
+    font-size: 18px;
+    color: gray;
+    text-align: center;
+    margin-top: 20px;
+  }
+  

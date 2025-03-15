@@ -1,0 +1,55 @@
+.user-responses-container {
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .table-title {
+    font-size: 22px;
+    margin-bottom: 15px;
+  }
+  
+  .user-responses-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .user-responses-table th,
+  .user-responses-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: center;
+  }
+  
+  .user-responses-table th {
+    background: #f4f4f4;
+    font-weight: bold;
+  }
+  
+  .correct {
+    color: green;
+    font-weight: bold;
+  }
+  
+  .incorrect {
+    color: red;
+    font-weight: bold;
+  }
+  
+  .no-data {
+    text-align: center;
+    font-style: italic;
+    color: gray;
+  }
+  
+  .total-score-row {
+    background-color: #f4f4f4;
+    font-weight: bold;
+  }
+  
+  .total-score {
+    color: #2d89ef;
+    font-size: 18px;
+  }
+  
