@@ -1,40 +1,63 @@
 import React, { useEffect, useState } from "react";
 import { getAllResponses } from "../api";
-import Sidebar from "./sidebar"; // Import Sidebar
-import { Box, Typography } from "@mui/material";
-import "./responsesDashboard.css";
+import Sidebar from "./sidebar";
+import {
+  Box,
+  Typography,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  Paper,
+} from "@mui/material";
+// import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
-const drawerWidth = 240; // Sidebar width
+const drawerWidth = 50;
 
 const Dashboard = () => {
-  const [responses, setResponses] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [users, setUsers] = useState([]);
-  const [matches, setMatches] = useState([]);
+  const [userData, setUserData] = useState({});
 
   useEffect(() => {
     const fetchResponses = async () => {
       try {
         const data = await getAllResponses();
-        setResponses(data);
         console.log("Fetched Data:", data);
 
-        // Extract unique users correctly
-        const uniqueUsers = Array.from(
-          new Set(data.map((res) => res.userId?.username))
-        ).filter(Boolean); // Remove null/undefined users
+        const processedData = {};
 
-        // Extract all matches and ensure unique values
-        const matchMap = {};
         data.forEach((res) => {
-          if (res.matchId?.matchName) {
-            matchMap[res.matchId.matchName] = res.matchId.matchName;
+          if (!res.userId || !res.matchId || !res.questionId) return;
+
+          const username = res.userId.username;
+          const matchName = res.matchId.matchName;
+          const questionName = res.questionId.text;
+          const isCorrect = res.isCorrect;
+
+          if (!processedData[username]) {
+            processedData[username] = { totalPoints: 0, matches: {} };
+          }
+
+          if (!processedData[username].matches[matchName]) {
+            processedData[username].matches[matchName] = { totalPoints: 0, questions: {} };
+          }
+
+          if (!processedData[username].matches[matchName].questions[questionName]) {
+            processedData[username].matches[matchName].questions[questionName] = 0;
+          }
+
+          if (isCorrect) {
+            processedData[username].matches[matchName].questions[questionName] += 1;
+            processedData[username].matches[matchName].totalPoints += 1;
+            processedData[username].totalPoints += 1;
           }
         });
-        const uniqueMatches = Object.values(matchMap);
 
-        setUsers(uniqueUsers);
-        setMatches(uniqueMatches);
+        setUserData(processedData);
       } catch (error) {
         console.error("Error fetching responses:", error);
       } finally {
@@ -45,72 +68,108 @@ const Dashboard = () => {
     fetchResponses();
   }, []);
 
-  if (loading) return <div className="loading">Loading...</div>;
+  if (loading) return <Typography>Loading...</Typography>;
+
+  const sortedUsers = Object.entries(userData).sort(
+    (a, b) => b[1].totalPoints - a[1].totalPoints
+  );
 
   return (
-    <Box display="flex">
-      {/* Sidebar */}
+    <Box display="flex" sx={{ backgroundColor: "#e3f2fd", minHeight: "100vh" }}>
       <Sidebar />
 
-      {/* Main Content */}
       <Box
         component="main"
         sx={{
           flexGrow: 1,
           p: 3,
-          marginLeft: `${drawerWidth}px`, // Ensures content is not overlapped by the sidebar
+          marginLeft: `${drawerWidth}px`,
         }}
       >
-        <Typography variant="h5" gutterBottom>
-          📊 Match Points Dashboard
+        <Typography
+          variant="h4"
+          gutterBottom
+          sx={{
+            fontWeight: "bold",
+            color: "#000",
+            textAlign: "center",
+            mb: 3,
+          }}
+        >
+          🏆 Leaderboard
         </Typography>
 
-        <div className="table-container">
-          <table className="dashboard-table">
-            <thead>
-              <tr>
-                <th className="fixed-column">UserName</th>
-                {matches.map((match) => (
-                  <th key={match} className="scrollable-column">
-                    {match}
-                  </th>
+        {sortedUsers.length === 0 ? (
+          <Typography>No responses available.</Typography>
+        ) : (
+          sortedUsers.map(([username, data]) => (
+            <Accordion
+              key={username}
+              sx={{
+                backgroundColor: "#ffffff",
+                boxShadow: "0px 4px 10px rgba(0,0,0,0.1)",
+                marginBottom: 2,
+                borderRadius: "8px",
+                "&:hover": { backgroundColor: "#f1f8ff" },
+              }}
+            >
+              <AccordionSummary>
+                <Typography variant="h6" sx={{ color: "#000", flex: 1 }}>
+                  {username}
+                </Typography>
+                <Typography variant="h6" sx={{ color: "#000" }}>
+                  {data.totalPoints} Points
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                {Object.entries(data.matches).map(([matchName, matchData]) => (
+                  <Accordion
+                    key={matchName}
+                    sx={{
+                      backgroundColor: "#f5f5f5",
+                      marginBottom: 1,
+                      borderRadius: "8px",
+                      "&:hover": { backgroundColor: "#e3f2fd" },
+                    }}
+                  >
+                    <AccordionSummary>
+                      <Typography variant="body1" sx={{ color: "#000" }}>
+                        {matchName} - Points: {matchData.totalPoints}
+                      </Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <Paper elevation={3} sx={{ p: 2, borderRadius: "8px" }}>
+                        <Table>
+                          <TableHead>
+                            <TableRow sx={{ backgroundColor: "#ccc" }}>
+                              <TableCell sx={{ color: "#000" }}>Question Name</TableCell>
+                              <TableCell sx={{ color: "#000" }}>Points</TableCell>
+                            </TableRow>
+                          </TableHead>
+
+                          <TableBody>
+                            {Object.entries(matchData.questions).map(([question, points]) => (
+                              <TableRow
+                                key={question}
+                                sx={{
+                                  "&:nth-of-type(odd)": { backgroundColor: "#f0f4c3" },
+                                  "&:hover": { backgroundColor: "#dcedc8" },
+                                }}
+                              >
+                                <TableCell sx={{ color: "#000" }}>{question}</TableCell>
+                                <TableCell sx={{ color: "#000" }}>{points}</TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </Paper>
+                    </AccordionDetails>
+                  </Accordion>
                 ))}
-                <th className="fixed-column">Total Points</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((user) => {
-                const userResponses = responses.filter(
-                  (res) => res.userId?.username === user
-                );
-
-                const matchPoints = matches.map((match) => {
-                  const correctAnswers = userResponses.filter(
-                    (res) => res.matchId?.matchName === match && res.isCorrect
-                  ).length;
-                  return correctAnswers;
-                });
-
-                const totalPoints = matchPoints.reduce(
-                  (sum, points) => sum + points,
-                  0
-                );
-
-                return (
-                  <tr key={user}>
-                    <td className="fixed-column">{user}</td>
-                    {matchPoints.map((points, index) => (
-                      <td key={index} className="scrollable-column">
-                        {points}
-                      </td>
-                    ))}
-                    <td className="fixed-column">{totalPoints}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+              </AccordionDetails>
+            </Accordion>
+          ))
+        )}
       </Box>
     </Box>
   );
