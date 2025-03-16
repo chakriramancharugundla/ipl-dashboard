@@ -6,6 +6,8 @@ const bcrypt = require("bcryptjs");
 require("dotenv").config();
 
 
+
+
 const matchRoutes = require("./routes/matches");
 const questionRoutes = require("./routes/questions");
 const responseRoutes = require("./routes/responses");
@@ -16,7 +18,7 @@ const authRoutes = require("./routes/auth");
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({ origin: '*' }));
 
 mongoose
   .connect(process.env.MONGO_URI, {

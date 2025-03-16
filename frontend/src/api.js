@@ -25,6 +25,8 @@ const handleApiError = (error, defaultMessage) => {
 export const loginUser = async (credentials) => {
   try {
     const response = await axios.post(`${API_URL}/auth/login`, credentials);
+    console.log(response);
+    
     return response;
   } catch (error) {
     return handleApiError(error, "Login failed");
