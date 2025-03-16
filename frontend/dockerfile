@@ -17,13 +17,16 @@ COPY . .
 RUN npm run build
 
 # Use Nginx to serve the built React app
-FROM nginx:alpine
+# FROM nginx:alpine
+FROM httpd:alpine
 
 # Copy built frontend files to Nginx public folder
-COPY --from=build /app/build /usr/share/nginx/html
+#COPY --from=build /app/build /usr/share/nginx/html
+COPY --from=build /app/build /usr/local/apache2/htdocs/
 
 # Expose the frontend port
 EXPOSE 80
 
 # Start Nginx
-CMD ["nginx", "-g", "daemon off;"]
+#CMD ["nginx", "-g", "daemon off;"]
+CMD ["httpd", "-D", "FOREGROUND"]
