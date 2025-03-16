@@ -44,11 +44,12 @@ const UserResponsesTable = () => {
           if (!response.matchId || !response.questionId) return;
 
           const matchName = response.matchId.matchName;
+          const matchDate=response.matchId.date;
           const questionText = response.questionId.text;
           const isCorrect = response.isCorrect;
 
           if (!processedData[matchName]) {
-            processedData[matchName] = { totalPoints: 0, questions: {} };
+            processedData[matchName] = { totalPoints: 0,matchDate, questions: {} };
           }
 
           processedData[matchName].questions[questionText] = {
@@ -72,8 +73,8 @@ const UserResponsesTable = () => {
   }, [user]);
 
   if (loading) return <Typography>Loading...</Typography>;
-
-  const sortedMatches = Object.entries(userData).sort((a, b) => b[1].totalPoints - a[1].totalPoints);
+    const sortedMatches = Object.entries(userData).sort(([ , matchA], [ , matchB]) => 
+    matchB.matchDate.localeCompare(matchA.matchDate));
 
   return (
     <Box display="flex" sx={{ backgroundColor: "#e3f2fd", minHeight: "100vh" }}>
