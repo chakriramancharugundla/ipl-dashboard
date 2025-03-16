@@ -26,7 +26,6 @@ const Dashboard = () => {
     const fetchResponses = async () => {
       try {
         const data = await getAllResponses();
-        console.log("Fetched Data:", data);
 
         const processedData = {};
 
@@ -35,6 +34,9 @@ const Dashboard = () => {
 
           const username = res.userId.username;
           const matchName = res.matchId.matchName;
+          const matchDate=res.matchId.date;
+          
+          
           const questionName = res.questionId.text;
           const isCorrect = res.isCorrect;
 
@@ -43,7 +45,7 @@ const Dashboard = () => {
           }
 
           if (!processedData[username].matches[matchName]) {
-            processedData[username].matches[matchName] = { totalPoints: 0, questions: {} };
+            processedData[username].matches[matchName] = { totalPoints: 0, questions: {}  ,matchDate};
           }
 
           if (!processedData[username].matches[matchName].questions[questionName]) {
@@ -122,7 +124,7 @@ const Dashboard = () => {
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
-                {Object.entries(data.matches).map(([matchName, matchData]) => (
+                {Object.entries(data.matches).sort((a, b) => b[1].matchDate.localeCompare(a[1].matchDate)).map(([matchName, matchData]) => (
                   <Accordion
                     key={matchName}
                     sx={{

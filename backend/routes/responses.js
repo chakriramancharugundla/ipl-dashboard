@@ -91,7 +91,7 @@ router.get("/all-responses", async (req, res) => {
   try {
     const responses = await Response.find()
       .populate("userId", "username") // Populate only username
-      .populate("matchId", "matchName") // Populate match name
+      .populate("matchId", "matchName date") // Populate match name
       .populate("questionId", "text"); // Populate question text
 
     if (!responses || responses.length === 0) {
