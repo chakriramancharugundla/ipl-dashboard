@@ -1,11 +1,15 @@
 import React from "react";
 import { Drawer, List, ListItem, ListItemText } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const drawerWidth = 240;
 
 const Sidebar = () => {
   const navigate = useNavigate();
+  const user=useAuth();
+  console.log(user.user.username);
+  
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -30,6 +34,9 @@ const Sidebar = () => {
       }}
     >
       <List>
+      <ListItem >
+          <ListItemText primary={user.user.username}  />
+        </ListItem>
         <ListItem button onClick={() => navigate("/home")}>
           <ListItemText primary="Home" sx={{ cursor: "pointer" }} />
         </ListItem>
