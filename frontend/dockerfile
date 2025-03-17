@@ -1,6 +1,6 @@
 # Use Node.js to build the React app
-FROM node:18 AS build
-
+#FROM node:18 AS build
+FROM cagbu-dev-docker-tp.dockerhub-phx.oci.oraclecorp.com/node:22.14.0 AS build
 # Set the working directory inside the container
 WORKDIR /app
 
@@ -18,7 +18,8 @@ RUN npm run build
 
 # Use Nginx to serve the built React app
 # FROM nginx:alpine
-FROM httpd:alpine
+FROM cagbu-dev-docker-tp.dockerhub-phx.oci.oraclecorp.com/org.apache.httpd:httpd / 2.2.32
+# FROM httpd:alpine
 
 # Copy built frontend files to Nginx public folder
 #COPY --from=build /app/build /usr/share/nginx/html

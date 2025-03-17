@@ -1,5 +1,6 @@
 # Use an official Node.js image as the base
-FROM node:18
+#FROM node:18
+FROM cagbu-dev-docker-tp.dockerhub-phx.oci.oraclecorp.com/node:22.14.0
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -14,7 +15,6 @@ RUN npm install
 COPY . .
 
 # Expose the backend port
-EXPOSE 5000
-
+EXPOSE 5123
 # Command to run the backend
 CMD ["npm", "start"]
